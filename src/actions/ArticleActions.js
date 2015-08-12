@@ -18,6 +18,14 @@ class ArticleActions {
     );
     this.dispatch(response.data);
   }
+  async transition(id, state, roles) {
+    const response = await axios.post(
+      '/api/articles/' + id + '/transition',
+      {state, roles},
+      LoginStore.getState().apiConfig
+    );
+    this.dispatch(response.data);
+  }
 }
 
 module.exports = alt.createActions(ArticleActions);

@@ -1,4 +1,18 @@
 var fsm = require("state.js");
+var stateNames = [
+  "idea",
+  "pitch",
+  "inProgress",
+  "draft",
+  "content",
+  "languageOK",
+  "graphicsOK",
+  "reviewed",
+  "scheduled",
+  "published",
+  "takenDown",
+  "rejected"
+];
 
 var evaluateAction = function (options) {
   var role = options.user.role;
@@ -26,6 +40,8 @@ var evaluateAction = function (options) {
   const DEFAULT_REGION = "model.default";
 
   var states = {idea, pitch, inProgress, draft, content, languageOK, graphicsOK, reviewed, scheduled, published, takenDown, rejected};
+
+  console.log(states[0]);
 
   function transition(action) {
     return function(message) {
@@ -80,4 +96,4 @@ var evaluateAction = function (options) {
   return {beforeState, afterState, success, error};
 }
 
-module.exports = {evaluateAction};
+module.exports = {evaluateAction, stateNames};

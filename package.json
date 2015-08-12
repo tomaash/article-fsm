@@ -4,6 +4,7 @@
   "description": "Article state machine prototype",
   "main": "server/index.js",
   "scripts": {
+    "postinstall": "mkdir -p ./public/js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify --debug -t [babelify --stage 0] src > public/js/bundle.js",
     "watch": "watchify --debug -t [babelify --stage 0] src -o public/js/bundle.js",

@@ -12,7 +12,7 @@ import fsm from './article-fsm';
 graph.get = promisify(graph.get);
 
 export default function(app) {
-  const mongoUrl = process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || '127.0.0.1:27017/fbloginalt';
+  const mongoUrl = process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || '127.0.0.1:27017/article-fsm';
   const mongoose = require('mongoose');
   mongoose.connect(mongoUrl);
 

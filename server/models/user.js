@@ -11,10 +11,7 @@ const UserSchema = new mongoose.Schema({
   },
   fbtoken: String,
   username: {
-    type: String,
-    index: {
-      unique: true
-    }
+    type: String
   },
   name: String,
   picture: String,

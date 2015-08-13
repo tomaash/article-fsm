@@ -18,10 +18,10 @@ class ArticleActions {
     );
     this.dispatch(response.data);
   }
-  async transition(id, state, roles) {
+  async transition(id, transition, user) {
     const response = await axios.post(
       '/api/articles/' + id + '/transition',
-      {state, roles},
+      {transition, user},
       LoginStore.getState().apiConfig
     );
     this.dispatch(response.data);

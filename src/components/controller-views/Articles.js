@@ -11,7 +11,7 @@ import {clone} from 'lodash';
 
 var optionExpander = name => ({value: name, label: name});
 
-const states = articleFSM.stateNames.map(optionExpander);
+const transitions = articleFSM.transitions.map(optionExpander);
 
 const rolesNames = [
   "writer",
@@ -41,6 +41,7 @@ export default class App extends React.Component {
     this.state = {
       article: {},
       currentArticle: {},
+      currentTransition: null,
       user: {
         roles: ""
       },
@@ -52,15 +53,18 @@ export default class App extends React.Component {
     this.state.article = {};
   }
   _transition() {
-    ArticleActions.transition(this.state.currentArticle._id, this.state.currentArticle.state, this.state.user.roles.split(","));
+    const userData = {
+      username: 'foo',
+      roles: this.state.user.roles.split(",")
+    }
+    ArticleActions.transition(this.state.currentArticle._id, this.state.currentTransition, userData);
     this.setState({currentArticle: {}});
   }
   _loadCurrent(item) {
     this.setState({currentArticle: clone(item)});
   }
-  _changeState(newState) {
-    this.state.currentArticle.state = newState;
-    this.setState({currentArticle: this.state.currentArticle});
+  _changeTransition(newTransition) {
+    this.setState({currentTransition: newTransition});
   }
   _changeRoles(newRoles) {
     console.log(newRoles);
@@ -72,14 +76,15 @@ export default class App extends React.Component {
     if (this.state.currentArticle.title) {
       stateEditor = (
         <div >
-          <h1>Change state</h1>
-          <h3>{this.state.currentArticle.title}</h3>
+          <h1>Article transition</h1>
+          <div><b>Title: </b>{this.state.currentArticle.title}</div>
+          <div><b>State: </b>{this.state.currentArticle.state}</div>
           <div className='form-group'>
-            <label>State</label>
+            <label>Transition: </label>
             <Select
-              value={this.state.currentArticle.state}
-              options={states}
-              onChange={this._changeState.bind(this)}
+              value={this.state.currentTransition}
+              options={transitions}
+              onChange={this._changeTransition.bind(this)}
             />
           </div>
           <div className='form-group'>
@@ -94,7 +99,7 @@ export default class App extends React.Component {
 
           <Button
             onClick={this._transition.bind(this)}
-            bsStyle="danger">Transition</Button>
+            bsStyle="danger">Submit transition</Button>
         </div>
       )
     }
@@ -123,7 +128,7 @@ export default class App extends React.Component {
             <Button
               className="pull-right"
               onClick={this._loadCurrent.bind(this, item)}
-              bsStyle="warning">Change state</Button>
+              bsStyle="warning">Transition</Button>
             <h2>{item.title}</h2>
             <p>{item.content}</p>
             <p><b>State:</b> {item.state}</p>

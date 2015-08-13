@@ -6,19 +6,19 @@ var article = {
 }
 
 var writerUser = {
-  role: "writer"
+  roles: ["writer"]
 }
 
 var editorUser = {
-  role: "editor"
+  roles: ["editor"]
 }
 
 var graphicsUser = {
-  role: "graphics"
+  roles: ["graphics"]
 }
 
 var languageUser = {
-  role: "language"
+  roles: ["language"]
 }
 
 var result;

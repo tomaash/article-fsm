@@ -1,21 +1,19 @@
 var fsm = require("state.js");
-var stateNames = [
-  "idea",
-  "pitch",
-  "inProgress",
-  "draft",
-  "content",
-  "languageOK",
-  "graphicsOK",
-  "reviewed",
-  "scheduled",
-  "published",
-  "takenDown",
-  "rejected"
+
+var transitions = [
+  "submitIdea",
+  "fixIdea",
+  "approveIdea",
+  "submitDraft",
+  "approveDraft",
+  "approveGraphics",
+  "approveLanguage",
+  "approveGraphics",
+  "approveLanguage"
 ];
 
 var evaluateAction = function (options) {
-  var role = options.user.role;
+  var roles = options.user.roles;
   var action = options.action;
   var state = options.article.state;
   var id = options.article.id;
@@ -56,8 +54,12 @@ var evaluateAction = function (options) {
     return function(message) {
       // if (typeof message === "string") console.log(message);
       if (message === action) {
-        if (role !== requiredRole) {
-          error = `Insufficient privileges "${role}" for "${action}", "${requiredRole}" required`;
+        console.log('guarded!');
+        console.log(roles);
+        console.log(requiredRole);
+        console.log(roles.indexOf(requiredRole));
+        if (roles.indexOf(requiredRole) === -1) {
+          error = `Insufficient privileges "${roles}" for "${action}", "${requiredRole}" required`;
           return false;
         } else {
           return true;
@@ -70,30 +72,31 @@ var evaluateAction = function (options) {
     return instance.last[DEFAULT_REGION].name;
   }
 
-  idea.to(pitch).when(transition("submitIdea"));
+  idea.to(pitch).when(guardedTransition("writer", "submitIdea"));
   pitch.to(idea).when(guardedTransition("editor", "fixIdea"));
   pitch.to(inProgress).when(guardedTransition("editor", "approveIdea"));
-  inProgress.to(draft).when(transition("submitDraft"));
+  inProgress.to(draft).when(guardedTransition("writer", "submitDraft"));
   draft.to(content).when(guardedTransition("editor", "approveDraft"));
 
-  content.to(graphicsOK).when(transition("approveGraphics"));
-  content.to(languageOK).when(transition("approveLanguage"));
-  languageOK.to(reviewed).when(transition("approveGraphics"));
-  graphicsOK.to(reviewed).when(transition("approveLanguage"));
+  content.to(graphicsOK).when(guardedTransition("visual", "approveGraphics"));
+  content.to(languageOK).when(guardedTransition("proofreader", "approveLanguage"));
+  languageOK.to(reviewed).when(guardedTransition("visual", "approveGraphics"));
+  graphicsOK.to(reviewed).when(guardedTransition("proofreader", "approveLanguage"));
 
   // create a state machine instance
   var instance = new fsm.StateMachineInstance(id);
 
   // Load initial state
-  initial.to(states[state]);
+  initial.to(states[state] || idea);
 
   // initialise the model and instance
   fsm.initialise(model, instance);
   const beforeState = getStateName(instance);
+  console.log('Will evaluate ' + action);
   fsm.evaluate(model, instance, action);
   const afterState = getStateName(instance);
   const success = (beforeState !== afterState)
-  return {beforeState, afterState, success, error};
+  return {beforeState, afterState, action, success, error};
 }
 
-module.exports = {evaluateAction, stateNames};
+module.exports = {evaluateAction, transitions};

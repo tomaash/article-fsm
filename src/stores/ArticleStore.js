@@ -12,6 +12,9 @@ class ArticleStore {
   onPost(data) {
     this.articles.unshift(data);
   }
+  onTransition(data) {
+    ArticleActions.fetch();
+  }
 }
 
 module.exports = (alt.createStore(ArticleStore));

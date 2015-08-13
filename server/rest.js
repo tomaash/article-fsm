@@ -8,12 +8,30 @@ import {facebook} from './config';
 import url from 'url';
 import graph from 'fbgraph';
 import promisify from 'es6-promisify';
+import fsm from './article-fsm';
 graph.get = promisify(graph.get);
 
 export default function(app) {
   const mongoUrl = process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || '127.0.0.1:27017/fbloginalt';
   const mongoose = require('mongoose');
   mongoose.connect(mongoUrl);
+
+  app.post('/api/articles/:id/transition', function *(next) {
+    yield next;
+    var article = yield Article.findById(this.params.id).exec();
+    console.log(article);
+    var user = this.request.body.user;
+    var action = this.request.body.transition;
+    var result = fsm.evaluateAction({article, user, action});
+    if (result.success) {
+      this.status = 200;
+      article.state = result.afterState;
+      result.updatedArticle = yield article.save();
+    } else {
+      this.status = 401;
+    }
+    return this.body = result;
+  });
 
   generateApi(app, Article, '/api');
 

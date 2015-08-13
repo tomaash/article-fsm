@@ -20,8 +20,7 @@ import reactRoutes from '../src/routes/routes.react';
 import alt from '../src/alt';
 import auth from './auth';
 
-const port = 8080;
-const ip = '127.0.0.1';
+const port = process.env.PORT || 8080;
 const app = koa();
 const router = koaRouter();
 
@@ -77,7 +76,7 @@ app.use(function *(next) {
 });
 
 /* logging to the server */
-app.listen(port, ip, function() {
-  console.log('Go to ' + ip + ':' + port);
+app.listen(port, function() {
+  console.log('Application started on ' + port);
 });
 

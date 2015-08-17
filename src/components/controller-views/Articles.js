@@ -13,15 +13,7 @@ var optionExpander = name => ({value: name, label: name});
 
 const transitions = articleFSM.transitions.map(optionExpander);
 
-const rolesNames = [
-  "writer",
-  "editor",
-  "visual",
-  "proofreader",
-  "scheduler"
-]
-
-const roles = rolesNames.map(optionExpander);
+const roles = articleFSM.roles.map(optionExpander);
 
 @requireAuthentication
 @connectToStores
